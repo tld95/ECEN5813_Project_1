@@ -1,13 +1,14 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <ctype.h>
+/* 
+ * PES Project One Program Two source code implementation
+ *	Tristan Duenas
+ *	GCC C99 compiler
+ */
 
-void displayASCII(uint8_t ascii);
+#include "ProgramTwo.h"
 
 int main(int argc, char *argv[])
 {
-	uint8_t ascii = atoi(argv[1]);
+	uint8_t ascii = atoi(argv[ASCII_CODE_ARGUMENT_NUMBER]);
 	displayASCII(ascii);
 
 	return 0;	

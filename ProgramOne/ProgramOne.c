@@ -1,50 +1,14 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <math.h>
-#include <string.h>
-#include <inttypes.h>
+/* 
+ * PES Project One Program One source code implementation
+ *	Tristan Duenas
+ *	GCC C99 compiler
+ */
 
-#define VALID 0
-#define INVALID 1
-
-#define BASE_TWO 2
-
-#define NUMBER_OF_ARGUMENTS 4
-#define VALUE_ARGUMENT 1
-#define RADIX_ARGUMENT 2
-#define OPERAND_ARGUMENT 3
-
-#define MAX_BINARY_STRING_SIZE 17
-
-#define BINARY_HEADER_SIZE 2
-
-#define SIGN_MAG_OPERAND_SIZE_FOUR_MASK 0x8;
-#define SIGN_MAG_OPERAND_SIZE_EIGHT_MASK 0x80;
-#define SIGN_MAG_OPERAND_SIZE_SIXTEEN_MASK 0x8000;
-
-typedef enum
-{
-	RADIX_EIGHT = 8,
-	RADIX_TEN = 10,
-	RADIX_SIXTEEN = 16
-} radixValues;
-
-typedef enum
-{
-	OPERAND_SIZE_FOUR = 4,
-	OPERAND_SIZE_EIGHT = 8,
-	OPERAND_SIZE_SIXTEEN = 16
-} operandValues;
-
-uint8_t invalidInput(int argc, char *argv[], uint16_t* value, uint8_t* radix, uint8_t* operandSize);
-void printTable(uint16_t value, uint8_t radix, uint8_t operandSize);
-void convertToBinaryString(uint16_t value, uint8_t operandSize, char *binaryString);
-uint16_t getSignMagnitude(uint16_t value, uint8_t operandSize);
+#include "ProgramOne.h"
 
 int main(int argc, char *argv[])
 {
-	uint16_t value = 0;
+	int16_t value = 0;
 	uint8_t radix = 0;
 	uint8_t operandSize = 0;
 	if (invalidInput(argc, argv, &value, &radix, &operandSize) == VALID)
@@ -55,13 +19,13 @@ int main(int argc, char *argv[])
 	return 0;	
 }
 
-uint8_t invalidInput(int argc, char *argv[], uint16_t* value, uint8_t* radix, uint8_t* operandSize)
+uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uint8_t* operandSize)
 {
 	int16_t inputValidity = VALID;
 
 	if (argc != NUMBER_OF_ARGUMENTS)
 	{
-		printf("Number of arguments incorrect.\n");
+		printf("Error bad input. Number of arguments incorrect.\n");
 		inputValidity = INVALID;
 	}
 	else
@@ -70,12 +34,12 @@ uint8_t invalidInput(int argc, char *argv[], uint16_t* value, uint8_t* radix, ui
 		*operandSize = atoi(argv[OPERAND_ARGUMENT]);
 		if (((*radix) != RADIX_EIGHT) && ((*radix) != RADIX_TEN) && ((*radix) != RADIX_SIXTEEN))
 		{
-			printf("Radix invalid.\n");		
+			printf("Error bad input. Radix invalid.\n");		
 			inputValidity = INVALID;
 		}
 		if (((*operandSize) != OPERAND_SIZE_FOUR) && ((*operandSize) != OPERAND_SIZE_EIGHT) && ((*operandSize) != OPERAND_SIZE_SIXTEEN))
 		{
-			printf("Operand invalid.\n");
+			printf("Error bad input. Operand invalid.\n");
 			inputValidity = INVALID;
 		}
 		
@@ -83,10 +47,10 @@ uint8_t invalidInput(int argc, char *argv[], uint16_t* value, uint8_t* radix, ui
 		{
 			char* endPtr;
 			*value = strtoimax(argv[VALUE_ARGUMENT], &endPtr, *radix);
-			uint16_t maxValue = pow((double)BASE_TWO, (double)(*operandSize))-1;
+			int16_t maxValue = (pow((double)BASE_TWO, (double)(*operandSize)) / SIGNED_RANGE_DIVISOR) - ONE;
 			if ((*value) > maxValue)
 			{
-				printf("Input outside of operand range.\n");
+				printf("Error bad input. Input outside of operand range.\n");
 				inputValidity = INVALID;
 			}
 		}
@@ -96,9 +60,8 @@ uint8_t invalidInput(int argc, char *argv[], uint16_t* value, uint8_t* radix, ui
 
 
 
-void printTable(uint16_t origValue, uint8_t radix, uint8_t operandSize)
+void printTable(int16_t value, uint8_t radix, uint8_t operandSize)
 {
-	int16_t value = (int16_t)origValue;
 	char absBinaryString[MAX_BINARY_STRING_SIZE];
 	char maxAbsBinaryString[MAX_BINARY_STRING_SIZE];
 	char minAbsBinaryString[MAX_BINARY_STRING_SIZE];
@@ -145,7 +108,7 @@ void printTable(uint16_t origValue, uint8_t radix, uint8_t operandSize)
 	printf("Sign-Magnitude							0b%s				0b%s				0b%s\n", signMagnitudeBinaryString, maxSignMagnitudeBinaryString, minSignMagnitudeBinaryString);
 }
 
-void convertToBinaryString(uint16_t value, uint8_t operandSize, char* binaryString)
+void convertToBinaryString(int16_t value, uint8_t operandSize, char* binaryString)
 {
 	memset(binaryString, 0, sizeof(char) *  MAX_BINARY_STRING_SIZE);
 	for (uint8_t bit = 1; bit <= operandSize; bit++)
@@ -161,7 +124,7 @@ void convertToBinaryString(uint16_t value, uint8_t operandSize, char* binaryStri
 	}
 }
 
-uint16_t getSignMagnitude(uint16_t value, uint8_t operandSize)
+uint16_t getSignMagnitude(int16_t value, uint8_t operandSize)
 {
 	uint16_t signMag = abs(value);
 	if (value < 0)

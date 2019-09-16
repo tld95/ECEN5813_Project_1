@@ -1,26 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+/* 
+ * PES Project One Program Three source code implementation
+ *	Tristan Duenas
+ *	GCC C99 compiler
+ */
 
-#define LAST_THREE_BITS_MASK 0x7
-#define BIT_SHIFT_AMOUNT_FOR_LAST_THREE_BITS 13
-#define MAX_BINARY_STRING_SIZE 4
-#define ON 1
-#define NUM_BYTES_IN_UINT_16 2
-#define NUM_BITS_IN_UINT_16 16
-
-typedef enum
-{
-	LEFT = 0,
-	RIGHT = 1
-} rotateDirection;
-
-void convertToBinaryString(uint16_t value, uint8_t operandSize, char* binaryString);
-void testLasThreeBits(uint16_t input, uint8_t *lastThreeBits, uint8_t *lastThreeBitsOn);
-void outputLastThreeBitsResult(uint8_t lastThreeBits, uint8_t lastThreeBitsOn);
-void reverseByteOrder(uint16_t *input);
-void rotateValue(uint16_t *input, uint16_t numBits, rotateDirection direction);
+#include "ProgramThree.h"
 
 int main(int argc, char *argv[])
 {
@@ -39,13 +23,13 @@ int main(int argc, char *argv[])
 	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
 	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
 
-	rotateValue(&input, 4, LEFT);
+	rotateValue(&input, FOUR_BITS, LEFT);
 	printf("Rotated 4 bits to the left: 0x%X\n", input);
 
 	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
 	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
 
-	rotateValue(&input, 8, LEFT);
+	rotateValue(&input, EIGHT_BITS, LEFT);
 	printf("Rotated 8 bits to the right: 0x%X\n", input);
 
 	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
@@ -57,9 +41,9 @@ int main(int argc, char *argv[])
 void reverseByteOrder(uint16_t *input)
 {
 	uint8_t *bytes = (uint8_t*)input;
-	uint8_t tempByte = bytes[0];
-	bytes[0] = bytes[1];
-	bytes[1] = tempByte;
+	uint8_t tempByte = bytes[FIRST_BYTE];
+	bytes[FIRST_BYTE] = bytes[SECOND_BYTE];
+	bytes[SECOND_BYTE] = tempByte;
 }
 
 void rotateValue(uint16_t *input, uint16_t numBits, rotateDirection direction)
@@ -103,12 +87,12 @@ void outputLastThreeBitsResult(uint8_t lastThreeBits, uint8_t lastThreeBitsOn)
 	}
 }
 
-void convertToBinaryString(uint16_t value, uint8_t operandSize, char* binaryString)
+void convertToBinaryString(uint16_t value, uint8_t amountOfBits, char* binaryString)
 {
 	memset(binaryString, 0, sizeof(char) *  MAX_BINARY_STRING_SIZE);
-	for (uint8_t bit = 1; bit <= operandSize; bit++)
+	for (uint8_t bit = 1; bit <= amountOfBits; bit++)
 	{
-		if (((value >> (operandSize-bit)) & 1) == 1)
+		if (((value >> (amountOfBits-bit)) & FIRST_BIT) == 1)
 		{
 			binaryString[bit-1] = '1';
 		}
