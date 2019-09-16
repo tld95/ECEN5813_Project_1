@@ -1,9 +1,0 @@
-Input:	Value -136			Radix 10			Operand Size 16
-Output:					Value					Maximum				Minimum
-Binary (abs)							0b0000000010001000				0b1111111111111111				0b0000000000000000
-Octal (abs)								0210					0177777					0
-Decimal (abs)							136						65535						0
-Hexadecimal (abs)						0x88					0xffff					0x0
-Signed One's Compliment (abs)		0b1111111101110111				0b0111111111111111				0b1000000000000000
-Signed Two's Compliment (abs)		0b1111111101111000				0b0111111111111111				0b1000000000000001
-Sign-Magnitude							0b1111111101111000				0b0111111111111111				0b1000000000000001
