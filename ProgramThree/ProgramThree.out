@@ -1,8 +1,8 @@
 Starting Value: 0xCAFE
-110, false
+1100, false
 Reversed Byte Order: 0xFECA
-111, true
+1111, false
 Rotated 4 bits to the left: 0xECAF
-111, true
+1110, true
 Rotated 8 bits to the right: 0xAFEC
-101, false
+1010, false

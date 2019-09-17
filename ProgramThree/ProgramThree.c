@@ -9,31 +9,31 @@
 int main(int argc, char *argv[])
 {
 	uint16_t input = 0xCAFE;
-	uint8_t lastThreeBits = 0;
-	uint8_t lastThreeBitsOn = 0;	
+	uint8_t lastFourBits = 0;
+	uint8_t threeBitsOn = 0;	
 
 	printf("Starting Value: 0x%X\n", input);
 
-	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
-	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
+	testLastFourBitsThreeBitsOn(input, &lastFourBits, &threeBitsOn);
+	outputLastFourBitsResult(lastFourBits, threeBitsOn);
 	
 	reverseByteOrder(&input);
 	printf("Reversed Byte Order: 0x%X\n", input);
 
-	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
-	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
+	testLastFourBitsThreeBitsOn(input, &lastFourBits, &threeBitsOn);
+	outputLastFourBitsResult(lastFourBits, threeBitsOn);
 
 	rotateValue(&input, FOUR_BITS, LEFT);
 	printf("Rotated 4 bits to the left: 0x%X\n", input);
 
-	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
-	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
+	testLastFourBitsThreeBitsOn(input, &lastFourBits, &threeBitsOn);
+	outputLastFourBitsResult(lastFourBits, threeBitsOn);
 
 	rotateValue(&input, EIGHT_BITS, LEFT);
 	printf("Rotated 8 bits to the right: 0x%X\n", input);
 
-	testLasThreeBits(input, &lastThreeBits, &lastThreeBitsOn);
-	outputLastThreeBitsResult(lastThreeBits, lastThreeBitsOn);
+	testLastFourBitsThreeBitsOn(input, &lastFourBits, &threeBitsOn);
+	outputLastFourBitsResult(lastFourBits, threeBitsOn);
 
 	return 0;	
 }
@@ -67,17 +67,21 @@ void rotateValue(uint16_t *input, uint16_t numBits, rotateDirection direction)
 	}
 }
 
-void testLasThreeBits(uint16_t input, uint8_t *lastThreeBits, uint8_t *lastThreeBitsOn)
+void testLastFourBitsThreeBitsOn(uint16_t input, uint8_t *lastFourBits, uint8_t *threeBitsOn)
 {
-	*lastThreeBits = ((input >> BIT_SHIFT_AMOUNT_FOR_LAST_THREE_BITS) & LAST_THREE_BITS_MASK);
-	*lastThreeBitsOn = ((*lastThreeBits) == LAST_THREE_BITS_MASK);
+	*lastFourBits = ((input >> BIT_SHIFT_AMOUNT_FOR_LAST_FOUR_BITS) & LAST_FOUR_BITS_MASK);
+	uint8_t bitOne = (*lastFourBits) & 0x1;
+	uint8_t bitTwo = ((*lastFourBits) >> SHIFT_ONE) & 0x1;
+	uint8_t bitThree = ((*lastFourBits) >> SHIFT_TWO) & 0x1;
+	uint8_t bitFour = ((*lastFourBits) >> SHIFT_THREE) & 0x1;
+	*threeBitsOn = ((bitOne + bitTwo + bitThree + bitFour) == THREE);
 }
 
-void outputLastThreeBitsResult(uint8_t lastThreeBits, uint8_t lastThreeBitsOn)
+void outputLastFourBitsResult(uint8_t lastFourBits, uint8_t threeBitsOn)
 {
 	char binaryString[MAX_BINARY_STRING_SIZE];
-	convertToBinaryString(lastThreeBits, 3, binaryString);
-	if (lastThreeBitsOn == ON)
+	convertToBinaryString(lastFourBits, 4, binaryString);
+	if (threeBitsOn == ON)
 	{
 		printf("%s, true\n", binaryString);
 	}
