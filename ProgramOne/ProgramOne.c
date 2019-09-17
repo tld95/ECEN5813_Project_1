@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 	uint8_t operandSize = 0;
 	if (invalidInput(argc, argv, &value, &radix, &operandSize) == VALID)
 	{
-		printTable(value, radix, operandSize);	
+		printTable(argv[VALUE_ARGUMENT], value, radix, operandSize);	
 	}
 
 	return 0;	
@@ -46,12 +46,16 @@ uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uin
 		if (inputValidity == VALID)
 		{
 			char* endPtr;
-			*value = strtoimax(argv[VALUE_ARGUMENT], &endPtr, *radix);
-			int16_t maxValue = (pow((double)BASE_TWO, (double)(*operandSize)) / SIGNED_RANGE_DIVISOR) - ONE;
-			if ((*value) > maxValue)
+			uint16_t tempValue = strtoimax(argv[VALUE_ARGUMENT], &endPtr, *radix);
+			uint16_t maxValue = pow((double)BASE_TWO, (double)(*operandSize)) - ONE;
+			if (tempValue > maxValue)
 			{
 				printf("Error bad input. Input outside of operand range.\n");
 				inputValidity = INVALID;
+			}
+			else
+			{
+				*value = (int16_t)tempValue;
 			}
 		}
 	}
@@ -60,7 +64,7 @@ uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uin
 
 
 
-void printTable(int16_t value, uint8_t radix, uint8_t operandSize)
+void printTable(char* origValue, int16_t value, uint8_t radix, uint8_t operandSize)
 {
 	char absBinaryString[MAX_BINARY_STRING_SIZE];
 	char maxAbsBinaryString[MAX_BINARY_STRING_SIZE];
@@ -81,9 +85,11 @@ void printTable(int16_t value, uint8_t radix, uint8_t operandSize)
 	int16_t minSignedOnesComp = ~maxSignedOnesComp;
 	int16_t signedTwosComp = signedOnesComp + 1;
 	int16_t minSignedTwosComp = minSignedOnesComp + 1;
-	int16_t signedMagnitude = getSignMagnitude(value, operandSize);
+	int8_t signMagValidity = VALID;
+	int16_t signedMagnitude = getSignMagnitude(value, operandSize, &signMagValidity);
 	int16_t maxSignedMagnitude = maxSignedOnesComp;
-	int16_t minSignedMagnitude = getSignMagnitude(-maxSignedMagnitude, operandSize);
+	int8_t minSignMagValidity = VALID;
+	int16_t minSignedMagnitude = getSignMagnitude(-maxSignedMagnitude, operandSize, &minSignMagValidity);
 
 	convertToBinaryString(absValue, operandSize, absBinaryString);
 	convertToBinaryString(maxValue, operandSize, maxAbsBinaryString);
@@ -93,16 +99,31 @@ void printTable(int16_t value, uint8_t radix, uint8_t operandSize)
 	convertToBinaryString(minSignedOnesComp, operandSize, minSignedOneCompBinaryString);	
 	convertToBinaryString(signedTwosComp, operandSize, signedTwoCompBinaryString);
 	convertToBinaryString(minSignedTwosComp, operandSize, minSignedTwoCompBinaryString);
-	convertToBinaryString(signedMagnitude, operandSize, signMagnitudeBinaryString);
+	if (signMagValidity == VALID)
+	{
+		convertToBinaryString(signedMagnitude, operandSize, signMagnitudeBinaryString);
+	}
+	else
+	{
+		strcpy(signMagnitudeBinaryString, "ERROR");
+	}
 	convertToBinaryString(maxSignedMagnitude, operandSize, maxSignMagnitudeBinaryString);
 	convertToBinaryString(minSignedMagnitude, operandSize, minSignMagnitudeBinaryString);
+	if (minSignMagValidity == VALID)
+	{
+		convertToBinaryString(minSignedMagnitude, operandSize, minSignMagnitudeBinaryString);
+	}
+	else
+	{
+		strcpy(minSignMagnitudeBinaryString, "ERROR");
+	}
 
-	printf("Input:	Value %d			Radix %d			Operand Size %d\n", value, radix, operandSize);
+	printf("Input:	Value %s			Radix %d			Operand Size %d\n", origValue, radix, operandSize);
 	printf("Output:					Value					Maximum				Minimum\n");
 	printf("Binary (abs)							0b%s				0b%s				0b%s\n", absBinaryString, maxAbsBinaryString, minAbsBinaryString);
 	printf("Octal (abs)								0%o					0%o					%o\n", absValue, maxValue, 0);
 	printf("Decimal (abs)							%d						%d						%d\n", absValue, maxValue, 0);
-	printf("Hexadecimal (abs)						0x%x					0x%x					0x%x\n", absValue, maxValue, 0);
+	printf("Hexadecimal (abs)						0x%X					0x%X					0x%X\n", absValue, maxValue, 0);
 	printf("Signed One's Compliment (abs)		0b%s				0b%s				0b%s\n", signedOneCompBinaryString, maxSignedOneCompBinaryString, minSignedOneCompBinaryString);
 	printf("Signed Two's Compliment (abs)		0b%s				0b%s				0b%s\n", signedTwoCompBinaryString, maxSignedOneCompBinaryString, minSignedTwoCompBinaryString);
 	printf("Sign-Magnitude							0b%s				0b%s				0b%s\n", signMagnitudeBinaryString, maxSignMagnitudeBinaryString, minSignMagnitudeBinaryString);
@@ -124,26 +145,34 @@ void convertToBinaryString(int16_t value, uint8_t operandSize, char* binaryStrin
 	}
 }
 
-uint16_t getSignMagnitude(int16_t value, uint8_t operandSize)
+uint16_t getSignMagnitude(int16_t value, uint8_t operandSize, int8_t* signMagValidity)
 {
-	uint16_t signMag = abs(value);
-	if (value < 0)
+	if (abs(value) > (pow(BASE_TWO, operandSize-1)-1))
 	{
-		switch((operandValues)operandSize)
-		{
-			case OPERAND_SIZE_FOUR:
-				signMag |= SIGN_MAG_OPERAND_SIZE_FOUR_MASK;
-				break;
-			case OPERAND_SIZE_EIGHT:
-				signMag |= SIGN_MAG_OPERAND_SIZE_EIGHT_MASK;
-				break;
-			case OPERAND_SIZE_SIXTEEN:
-				signMag |= SIGN_MAG_OPERAND_SIZE_SIXTEEN_MASK;
-				break;
-			default:
-				// Do nothing
-				break;
-		};
+		*signMagValidity = INVALID;
+		return 0;
 	}
-	return signMag;
+	else
+	{
+		uint16_t signMag = abs(value);
+		if (value < 0)
+		{
+			switch((operandValues)operandSize)
+			{
+				case OPERAND_SIZE_FOUR:
+					signMag |= SIGN_MAG_OPERAND_SIZE_FOUR_MASK;
+					break;
+				case OPERAND_SIZE_EIGHT:
+					signMag |= SIGN_MAG_OPERAND_SIZE_EIGHT_MASK;
+					break;
+				case OPERAND_SIZE_SIXTEEN:
+					signMag |= SIGN_MAG_OPERAND_SIZE_SIXTEEN_MASK;
+					break;
+				default:
+					// Do nothing
+					break;
+			};
+		}
+		return signMag;
+	}
 }

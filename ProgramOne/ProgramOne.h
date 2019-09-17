@@ -57,7 +57,7 @@ uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uin
 /*
  * Prints to the console a formatted table of conversion on an input value with a specified radix and operand size.
  */
-void printTable(int16_t value, uint8_t radix, uint8_t operandSize);
+void printTable(char* origValue, int16_t value,  uint8_t radix, uint8_t operandSize);
 
 /*
  * Converts operand size amount of bits of a unsigned 16 bit value to a binary char array.
@@ -67,6 +67,6 @@ void convertToBinaryString(int16_t value, uint8_t operandSize, char *binaryStrin
 /*
  * Returns the sign magnitude format of an input value based on a specified operand size.
  */
-uint16_t getSignMagnitude(int16_t value, uint8_t operandSize);
+uint16_t getSignMagnitude(int16_t value, uint8_t operandSize, int8_t* signMagValidity);
 
 #endif
