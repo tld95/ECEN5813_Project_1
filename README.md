@@ -14,7 +14,7 @@ In order to build and execute Program Two, run the following commands ECEN5813_P
 
 In order to build and execute Program Three, run the following commands ECEN5813_Project_1/ProgramThree/:
 - make
-- ./ProgramThree | ProgramThree.out
+- ./ProgramThree > ProgramThree.out
 
 ## ProgramOne.Out will be found in ECEN5813_Project_1/ProgramOne/
 ## ProgramTwo.Out will be found in ECEN5813_Project_1/ProgramTwo/
