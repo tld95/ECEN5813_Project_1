@@ -19,10 +19,7 @@
 
 #define BASE_TWO 2
 
-#define NUMBER_OF_ARGUMENTS 4
-#define VALUE_ARGUMENT 1
-#define RADIX_ARGUMENT 2
-#define OPERAND_ARGUMENT 3
+#define INPUT_ARGUMENT 1
 
 #define MAX_BINARY_STRING_SIZE 17
 
@@ -34,6 +31,13 @@
 
 #define SIGNED_RANGE_DIVISOR 2
 #define ONE 1
+
+#define MAX_INPUT_SETS 11
+#define MAX_STRING_INPUT_SIZE 20
+#define INPUTS_IN_A_SET 3
+#define INPUT_ONE 0
+#define INPUT_TWO 1
+#define INPUT_THREE 2
 
 typedef enum
 {
@@ -52,7 +56,7 @@ typedef enum
 /*
  * Verifies input value, radix, and operand size are valid prior to performing any operations on the input value.
  */
-uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uint8_t* operandSize);
+uint8_t invalidInput(char *valueString, char *radixString, char *operandSizeString, int16_t* value, uint8_t* radix, uint8_t* operandSize);
 
 /*
  * Prints to the console a formatted table of conversion on an input value with a specified radix and operand size.

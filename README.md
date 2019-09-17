@@ -6,11 +6,11 @@ GCC C99 is the designated compiler in the Makefile, and -Wall and Werror compile
 
 In order to build and execute Program One, run the following commands in ECEN5813_Project_1/ProgramOne/:
 - make
-- ./ProgramOne value radix operand_size | ProgramOne.out
+- ./ProgramOne "{-6,10,4},{-6,9,4},{-6,10,5},{-9,10,4},{237,10,8},{0354,8,8},{0xEB,16,8},{-125,10,8},{65400,10,8},{65400,10,16},{-32701,10,16}" > ProgramOne.out
 
 In order to build and execute Program Two, run the following commands ECEN5813_Project_1/ProgramTwo/:
 - make
-- ./ProgramTwo acii_code | ProgramTwo.out
+- ./ProgramTwo "{66,114,117,99,101,32,83,97,121,115,32,72,105,33,7,9,50,48,49,57}" > ProgramTwo.out
 
 In order to build and execute Program Three, run the following commands ECEN5813_Project_1/ProgramThree/:
 - make

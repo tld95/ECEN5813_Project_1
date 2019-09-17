@@ -2,61 +2,108 @@
  * PES Project One Program One source code implementation
  *	Tristan Duenas
  *	GCC C99 compiler
+ * References:
+ * http://www.cplusplus.com/reference/cstring/strtok/
+ * https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxbd00/strtoimax.htm
  */
 
 #include "ProgramOne.h"
 
 int main(int argc, char *argv[])
 {
-	int16_t value = 0;
-	uint8_t radix = 0;
-	uint8_t operandSize = 0;
-	if (invalidInput(argc, argv, &value, &radix, &operandSize) == VALID)
+
+	// Parse constant input string
+	char values[MAX_INPUT_SETS][MAX_STRING_INPUT_SIZE];
+	char radices[MAX_INPUT_SETS][MAX_STRING_INPUT_SIZE];
+	char operands[MAX_INPUT_SETS][MAX_STRING_INPUT_SIZE];
+	// Remove {} from input string
+	for (int32_t index = 0; index < strlen(argv[INPUT_ARGUMENT]); index++)
 	{
-		printTable(argv[VALUE_ARGUMENT], value, radix, operandSize);	
+		if ((argv[INPUT_ARGUMENT][index] == '{') || (argv[INPUT_ARGUMENT][index] == '}'))
+		{
+			argv[INPUT_ARGUMENT][index] = ' ';
+		}
+	}
+
+	int8_t inputTypeCounter = 0;
+	int8_t setNumber = 0;
+	// Remove ',' from string
+	// Referenced http://www.cplusplus.com/reference/cstring/strtok/
+	char* ptr = strtok(argv[1], ",");
+	while (ptr != NULL)
+	{
+		if (inputTypeCounter == INPUT_ONE)
+		{
+			strncpy(values[setNumber], ptr, MAX_STRING_INPUT_SIZE);
+		}
+		if (inputTypeCounter == INPUT_TWO)
+		{
+			strncpy(radices[setNumber], ptr, MAX_STRING_INPUT_SIZE);
+		}
+		if (inputTypeCounter == INPUT_THREE)
+		{
+			strncpy(operands[setNumber], ptr, MAX_STRING_INPUT_SIZE);
+		}
+		ptr = strtok(NULL,",");
+		if (inputTypeCounter < INPUTS_IN_A_SET)
+		{		
+			inputTypeCounter++;
+		}		
+		if (inputTypeCounter >= INPUTS_IN_A_SET)
+		{
+			setNumber++;
+			inputTypeCounter = 0;
+		}
+	}
+
+	// Output table
+	for (int32_t index = 0; index < setNumber; index++)
+	{
+		printf("Input:	Value %s			Radix %s			Operand Size %s\n", values[index], radices[index], operands[index]);
+		int16_t value = 0;
+		uint8_t radix = 0;
+		uint8_t operandSize = 0;
+		if (invalidInput(values[index], radices[index], operands[index], &value, &radix, &operandSize) == VALID)
+		{
+			printTable(argv[VALUE_ARGUMENT], value, radix, operandSize);
+		}
+		printf("\n\n");
 	}
 
 	return 0;	
 }
 
-uint8_t invalidInput(int argc, char *argv[], int16_t* value, uint8_t* radix, uint8_t* operandSize)
+uint8_t invalidInput(char *valueString, char *radixString, char *operandSizeString, int16_t* value, uint8_t* radix, uint8_t* operandSize)
 {
 	int16_t inputValidity = VALID;
 
-	if (argc != NUMBER_OF_ARGUMENTS)
+	*radix = atoi(radixString);
+	*operandSize = atoi(operandSizeString);
+	if (((*radix) != RADIX_EIGHT) && ((*radix) != RADIX_TEN) && ((*radix) != RADIX_SIXTEEN))
 	{
-		printf("Error bad input. Number of arguments incorrect.\n");
+		printf("Error bad input. Radix invalid.\n");		
 		inputValidity = INVALID;
 	}
-	else
+	if (((*operandSize) != OPERAND_SIZE_FOUR) && ((*operandSize) != OPERAND_SIZE_EIGHT) && ((*operandSize) != OPERAND_SIZE_SIXTEEN))
 	{
-		*radix = atoi(argv[RADIX_ARGUMENT]);
-		*operandSize = atoi(argv[OPERAND_ARGUMENT]);
-		if (((*radix) != RADIX_EIGHT) && ((*radix) != RADIX_TEN) && ((*radix) != RADIX_SIXTEEN))
+		printf("Error bad input. Operand invalid.\n");
+		inputValidity = INVALID;
+	}
+	
+	if (inputValidity == VALID)
+	{
+		// Referenced https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.3.0/com.ibm.zos.v2r3.bpxbd00/strtoimax.htm
+		char* endPtr;
+		int16_t tempValue = strtoimax(valueString, &endPtr, *radix);
+		uint16_t maxValue = pow((double)BASE_TWO, (double)(*operandSize)) - ONE;
+		if (tempValue > maxValue)
 		{
-			printf("Error bad input. Radix invalid.\n");		
+			printf("Error bad input. Input outside of operand range.\n");
 			inputValidity = INVALID;
 		}
-		if (((*operandSize) != OPERAND_SIZE_FOUR) && ((*operandSize) != OPERAND_SIZE_EIGHT) && ((*operandSize) != OPERAND_SIZE_SIXTEEN))
+		else
 		{
-			printf("Error bad input. Operand invalid.\n");
-			inputValidity = INVALID;
-		}
-		
-		if (inputValidity == VALID)
-		{
-			char* endPtr;
-			uint16_t tempValue = strtoimax(argv[VALUE_ARGUMENT], &endPtr, *radix);
-			uint16_t maxValue = pow((double)BASE_TWO, (double)(*operandSize)) - ONE;
-			if (tempValue > maxValue)
-			{
-				printf("Error bad input. Input outside of operand range.\n");
-				inputValidity = INVALID;
-			}
-			else
-			{
-				*value = (int16_t)tempValue;
-			}
+			*value = (int16_t)tempValue;
 		}
 	}
 	return inputValidity;
@@ -118,7 +165,6 @@ void printTable(char* origValue, int16_t value, uint8_t radix, uint8_t operandSi
 		strcpy(minSignMagnitudeBinaryString, "ERROR");
 	}
 
-	printf("Input:	Value %s			Radix %d			Operand Size %d\n", origValue, radix, operandSize);
 	printf("Output:					Value					Maximum				Minimum\n");
 	printf("Binary (abs)							0b%s				0b%s				0b%s\n", absBinaryString, maxAbsBinaryString, minAbsBinaryString);
 	printf("Octal (abs)								0%o					0%o					%o\n", absValue, maxValue, 0);

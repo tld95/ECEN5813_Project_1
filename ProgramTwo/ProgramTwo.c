@@ -2,14 +2,39 @@
  * PES Project One Program Two source code implementation
  *	Tristan Duenas
  *	GCC C99 compiler
+ * References
+ * http://www.cplusplus.com/reference/cstring/strtok/
  */
 
 #include "ProgramTwo.h"
 
 int main(int argc, char *argv[])
 {
-	uint8_t ascii = atoi(argv[ASCII_CODE_ARGUMENT_NUMBER]);
-	displayASCII(ascii);
+	// Parse constant input string
+	// Remove {} from input string
+	char ascii_string[MAX_ASCII_STRING_INPUT_SIZE];
+	memset(ascii_string, 0, sizeof(char) * MAX_ASCII_STRING_INPUT_SIZE);
+	strncpy(ascii_string, &argv[INPUT_ARGUMENT][1], strlen(argv[INPUT_ARGUMENT])-2);
+	char values[MAX_ASCII_INPUTS][MAX_ASCI_CHAR_STRING_INPUT_SIZE];
+
+
+	int8_t numASCII_inputs = 0;
+	// Remove ',' from string
+	// Referenced http://www.cplusplus.com/reference/cstring/strtok/
+	char* ptr = strtok(ascii_string, ",");
+	while (ptr != NULL)
+	{
+		strcpy(values[numASCII_inputs], ptr);
+		ptr = strtok(NULL,",");
+		numASCII_inputs++;
+	}
+
+	for (int32_t index = 0; index < numASCII_inputs; index++)
+	{
+		uint8_t ascii = atoi(values[index]);
+		displayASCII(ascii);
+		printf("\n");
+	}
 
 	return 0;	
 }
