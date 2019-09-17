@@ -166,13 +166,13 @@ void printTable(int16_t value, uint8_t radix, uint8_t operandSize)
 	}
 
 	printf("Output:					Value					Maximum				Minimum\n");
-	printf("Binary (abs)					0b%s				0b%s				0b%s\n", absBinaryString, maxAbsBinaryString, minAbsBinaryString);
-	printf("Octal (abs)					0%o					0%o					%o\n", absValue, maxValue, 0);
-	printf("Decimal (abs)				%d						%d						%d\n", absValue, maxValue, 0);
-	printf("Hexadecimal (abs)			0x%X					0x%X					0x%X\n", absValue, maxValue, 0);
-	printf("Signed One's Compliment (abs)			0b%s				0b%s				0b%s\n", signedOneCompBinaryString, maxSignedOneCompBinaryString, minSignedOneCompBinaryString);
-	printf("Signed Two's Compliment (abs)			0b%s				0b%s				0b%s\n", signedTwoCompBinaryString, maxSignedOneCompBinaryString, minSignedTwoCompBinaryString);
-	printf("Sign-Magnitude				0b%s				0b%s				0b%s\n", signMagnitudeBinaryString, maxSignMagnitudeBinaryString, minSignMagnitudeBinaryString);
+	printf("Binary (abs)			0b%s				0b%s				0b%s\n", absBinaryString, maxAbsBinaryString, minAbsBinaryString);
+	printf("Octal (abs)			0%o					0%o					%o\n", absValue, maxValue, 0);
+	printf("Decimal (abs)		%d						%d						%d\n", absValue, maxValue, 0);
+	printf("Hexadecimal (abs)		0x%X					0x%X					0x%X\n", absValue, maxValue, 0);
+	printf("Signed One's Compliment (abs)		0b%s				0b%s				0b%s\n", signedOneCompBinaryString, maxSignedOneCompBinaryString, minSignedOneCompBinaryString);
+	printf("Signed Two's Compliment (abs)		0b%s				0b%s				0b%s\n", signedTwoCompBinaryString, maxSignedOneCompBinaryString, minSignedTwoCompBinaryString);
+	printf("Sign-Magnitude		0b%s				0b%s				0b%s\n", signMagnitudeBinaryString, maxSignMagnitudeBinaryString, minSignMagnitudeBinaryString);
 }
 
 void convertToBinaryString(int16_t value, uint8_t operandSize, char* binaryString)
